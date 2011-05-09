@@ -4,9 +4,9 @@ module NestedForm
       @fields ||= {}
       @template.after_nested_form(association) do
         model_object = object.class.reflect_on_association(association).klass.new
-        output = %Q[<div id="#{association}_fields_blueprint" style="display: none">].html_safe
+        output = %Q[<textarea id="#{association}_fields_blueprint" style="display: none">].html_safe
         output << fields_for(association, model_object, :child_index => "new_#{association}", &@fields[association])
-        output.safe_concat('</div>')
+        output.safe_concat('</textarea>')
         output
       end
       @template.link_to(name, "javascript:void(0)", :class => "add_nested_fields", "data-association" => association,
@@ -17,19 +17,21 @@ module NestedForm
       hidden_field(:_destroy) + @template.link_to(name, "javascript:void(0)", :class => "remove_nested_fields")
     end
 
-    def fields_for_with_nested_attributes(association_name, args, block)
+    def fields_for_with_nested_attributes(association, args, block)
       # TODO Test this better
-      block ||= Proc.new { |fields| @template.render(:partial => "#{association_name.to_s.singularize}_fields", :locals => {:f => fields}) }
+      #block ||= Proc.new { |fields| @template.render(:partial => "#{association.to_s.singularize}_fields", :locals => {:f => fields}) }
       @fields ||= {}
-      @fields[association_name] = block
-      super(association_name, args, block)
+      @fields[association] = block
+      #super(association, args, block) Original
+      super
     end
 
     def fields_for_nested_model(name, object, options, block)
-      output = '<div class="fields">'.html_safe
-      output << super
-      output.safe_concat('</div>')
-      output
+      #output = '<div class="fields">'.html_safe
+      #output << super
+      #output.safe_concat('</div>')
+      #output
+      super.html_safe
     end
   end
 end
